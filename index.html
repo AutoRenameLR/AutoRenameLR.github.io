@@ -97,10 +97,8 @@
         <!-- Main Content -->
         <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 overflow-hidden">
             
-            <!-- Kolom Kiri: Upload & Tabel -->
+            <!-- Kolom Kiri -->
             <div class="lg:col-span-8 flex flex-col space-y-4 md:space-y-6 overflow-hidden">
-                
-                <!-- Dropzone -->
                 <section class="bg-white dark:bg-slate-900 p-2 rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-300">
                     <div id="dropZone" class="border-2 md:border-4 border-dashed border-slate-100 dark:border-slate-800 rounded-xl md:rounded-2xl p-6 md:p-8 text-center hover:bg-hssi/5 hover:border-hssi/30 transition-all cursor-pointer group relative">
                         <input type="file" id="fileInput" multiple accept="application/pdf" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
@@ -114,7 +112,6 @@
                     </div>
                 </section>
 
-                <!-- List Tabel -->
                 <main class="flex-1 bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors duration-300 flex flex-col min-h-0">
                     <div class="p-4 md:px-6 md:py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
                         <h2 class="font-bold flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs md:text-sm uppercase tracking-widest">
@@ -151,7 +148,7 @@
                 </main>
             </div>
 
-            <!-- Kolom Kanan: Monitor -->
+            <!-- Kolom Kanan -->
             <aside class="lg:col-span-4 flex flex-col space-y-4 md:space-y-6 overflow-hidden">
                 <div class="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 h-full flex flex-col transition-colors duration-300 overflow-hidden">
                     <h3 class="font-black text-slate-400 mb-4 flex items-center gap-2 text-xs uppercase tracking-widest">
@@ -174,10 +171,10 @@
                     <div class="mt-4 p-4 bg-hssi/5 dark:bg-hssi/10 rounded-xl border border-hssi/10">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="w-2 h-2 rounded-full bg-hssi animate-pulse"></span>
-                            <span class="text-[10px] font-black uppercase tracking-wider text-hssi">Fitur Gagal-Auto Rename</span>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-hssi">Sistem Anti-Duplikat</span>
                         </div>
                         <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                            Jika QR tidak terdeteksi, sistem akan otomatis memberi nama <span class="font-bold">"Gagal Proses (n)"</span> sehingga dokumen tetap bisa diunduh dalam paket ZIP.
+                            Jika terdeteksi nomor QR yang sama atau file gagal, sistem akan menambahkan indeks unik agar <span class="font-bold">semua file</span> tetap masuk ke dalam ZIP tanpa tertimpa.
                         </p>
                     </div>
                 </div>
@@ -213,14 +210,12 @@
         const pCtx = previewCanvas.getContext('2d');
 
         let processedFiles = [];
-        let failedCounter = 0; // Penghitung untuk file gagal
+        let failedCounter = 0;
 
-        // Dark Mode Toggle
         darkModeToggle.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
         });
 
-        // Reset All
         btnReset.addEventListener('click', () => {
             if(confirm('Apakah Anda yakin ingin menghapus semua daftar antrean?')) {
                 processedFiles = [];
@@ -236,7 +231,6 @@
             }
         });
 
-        // Copy Text
         window.copyToClipboard = (text, btnId) => {
             const temp = document.createElement("input");
             temp.value = text;
@@ -255,7 +249,6 @@
             }, 2000);
         };
 
-        // File Selection Handlers
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(ev => {
             dropZone.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); });
         });
@@ -332,7 +325,6 @@
                 for (let t of cleanThresholds) {
                     const cleanedData = cleanImageData(headerData, t);
                     const result = jsQR(cleanedData, headerData.width, headerData.height, { inversionAttempts: "dontInvert" });
-                    
                     if (result && isRequestNumber(result.data)) {
                         detectedCode = result.data.trim().toUpperCase();
                         break;
@@ -349,7 +341,6 @@
                 if (detectedCode) {
                     finalFileName = detectedCode.replace(/[^a-zA-Z0-9\-_]/g, '_') + ".pdf";
                     isSuccess = true;
-                    
                     statusEl.innerHTML = '<span class="status-pill bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 uppercase">BERHASIL</span>';
                     qrEl.innerHTML = `
                         <div class="flex items-center gap-2">
@@ -360,16 +351,13 @@
                         </div>
                     `;
                 } else {
-                    // Logika Gagal Beruntun
                     failedCounter++;
                     finalFileName = `Gagal Proses (${failedCounter}).pdf`;
                     isSuccess = false;
-
                     statusEl.innerHTML = '<span class="status-pill bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400 uppercase text-[9px]">QR TIDAK TERDETEKSI</span>';
                     qrEl.innerHTML = `<span class="text-rose-500 font-bold italic text-[11px]">${finalFileName}</span>`;
                 }
 
-                // Masukkan ke daftar unduhan (Berhasil maupun Gagal)
                 const blobUrl = URL.createObjectURL(file);
                 actionEl.innerHTML = `
                     <a href="${blobUrl}" download="${finalFileName}" class="${isSuccess ? 'bg-hssi/10 text-hssi hover:bg-hssi hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'} font-black text-[9px] uppercase px-3 py-2 rounded-lg transition-all inline-flex items-center gap-1.5 active:scale-90 shadow-sm">
@@ -380,7 +368,6 @@
                 processedFiles.push({ originalFile: file, newName: finalFileName });
                 btnDownloadZip.classList.remove('hidden');
                 fileCountSpan.innerText = processedFiles.length;
-                
                 lucide.createIcons();
             } catch (err) {
                 console.error(err);
@@ -388,25 +375,39 @@
             }
         }
 
-        // JSZip Generator
+        // JSZip Generator dengan Logika Anti-Duplikat
         btnDownloadZip.addEventListener('click', async () => {
             if (processedFiles.length === 0) return;
             
             const originalText = btnDownloadZip.innerHTML;
-            btnDownloadZip.innerHTML = '<div class="loader"></div> Mengompres File...';
+            btnDownloadZip.innerHTML = '<div class="loader"></div> Mengompres...';
             btnDownloadZip.disabled = true;
 
             try {
                 const zip = new JSZip();
-                processedFiles.forEach(f => {
-                    zip.file(f.newName, f.originalFile);
+                const usedNames = new Set();
+                
+                processedFiles.forEach((f, index) => {
+                    let fileName = f.newName;
+                    const extension = ".pdf";
+                    const nameWithoutExt = fileName.slice(0, -4);
+                    
+                    // Logika: Jika nama file sudah ada di ZIP, tambahkan suffix index
+                    let counter = 1;
+                    while (usedNames.has(fileName)) {
+                        fileName = `${nameWithoutExt}_copy${counter}${extension}`;
+                        counter++;
+                    }
+                    
+                    usedNames.add(fileName);
+                    zip.file(fileName, f.originalFile);
                 });
                 
                 const blob = await zip.generateAsync({ type: "blob" });
                 const a = document.createElement("a");
                 a.href = URL.createObjectURL(blob);
                 const timestamp = new Date().toISOString().slice(0,19).replace(/[:T]/g, '_');
-                a.download = `HSSI_RENAME_${timestamp}.zip`;
+                a.download = `HSSI_RENAME_${processedFiles.length}_FILES_${timestamp}.zip`;
                 a.click();
             } catch (e) {
                 console.error("ZIP Error:", e);
