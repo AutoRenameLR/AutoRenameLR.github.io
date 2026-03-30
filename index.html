@@ -39,9 +39,15 @@
         #previewCanvas { width: 100% !important; height: auto !important; border-radius: 0.75rem; display: block; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
         .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
         .dark .glass-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(30, 41, 59, 0.8); }
+        
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-500 h-full flex flex-col overflow-hidden">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-500 h-screen flex flex-col overflow-hidden">
 
     <!-- Information Modal -->
     <div id="infoModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
@@ -59,68 +65,68 @@
         </div>
     </div>
 
-    <div class="flex-1 flex flex-col w-full max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 space-y-4 md:space-y-6 overflow-hidden">
+    <div class="flex-1 flex flex-col w-full max-w-[1600px] mx-auto p-3 md:p-4 lg:p-6 space-y-3 md:space-y-4 overflow-hidden">
         
         <!-- Header -->
-        <header class="glass-panel p-5 md:p-6 rounded-[2rem] shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="flex flex-col md:flex-row items-center gap-6">
+        <header class="glass-panel p-3 md:p-5 rounded-[1.5rem] md:rounded-[2rem] shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex flex-col md:flex-row items-center gap-4">
                 <div class="flex flex-col items-center">
-                    <svg width="100" height="50" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="80" height="40" viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10 50 L100 10 L190 50 L100 90 Z" fill="none" stroke="#16a34a" stroke-width="10" stroke-linejoin="round"/>
                         <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle" font-family="Inter" font-size="48" font-weight="900" fill="#16a34a">HSSI</text>
                     </svg>
-                    <span class="text-[8px] font-black text-slate-400 mt-1 uppercase tracking-widest">PT Hanwa Steel Service Indonesia</span>
+                    <span class="text-[7px] font-black text-slate-400 mt-0.5 uppercase tracking-widest">PT Hanwa Steel Service Indonesia</span>
                 </div>
-                <div class="h-12 w-px bg-slate-200 dark:bg-slate-800 hidden md:block"></div>
-                <div>
-                    <h1 class="text-2xl font-black tracking-tight uppercase">PDF <span class="text-hssi">Renamer</span></h1>
-                    <p class="text-slate-500 font-semibold italic text-xs mt-1">Smart OCR & QR Extraction System</p>
+                <div class="h-10 w-px bg-slate-200 dark:bg-slate-800 hidden md:block"></div>
+                <div class="text-center md:text-left">
+                    <h1 class="text-xl md:text-2xl font-black tracking-tight uppercase">PDF <span class="text-hssi">Renamer</span></h1>
+                    <p class="text-slate-500 font-semibold italic text-[10px] mt-0.5">Smart OCR & QR Extraction System</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
-                <button id="btnReset" class="hidden text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 px-4 py-2 rounded-xl font-bold text-xs uppercase transition-colors">Reset Antrean</button>
-                <button id="darkModeToggle" class="p-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                    <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
-                    <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+            <div class="flex items-center gap-3">
+                <button id="btnReset" class="hidden text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 px-3 py-1.5 rounded-xl font-bold text-[10px] uppercase transition-colors">Reset Antrean</button>
+                <button id="darkModeToggle" class="p-2.5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <i data-lucide="moon" class="w-4 h-4 hidden dark:block"></i>
+                    <i data-lucide="sun" class="w-4 h-4 block dark:hidden"></i>
                 </button>
             </div>
         </header>
 
         <!-- Main Content -->
-        <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden">
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 overflow-hidden">
             
-            <div class="lg:col-span-8 flex flex-col space-y-6 overflow-hidden">
+            <div class="lg:col-span-8 flex flex-col space-y-4 overflow-hidden">
                 <!-- Mode Switch -->
-                <div class="glass-panel p-2 rounded-[1.5rem] relative">
-                    <div class="relative flex items-center bg-slate-100 dark:bg-slate-900 rounded-[1.1rem] p-1 border dark:border-slate-800">
-                        <div id="switchThumb" class="absolute left-1 top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-transform duration-300"></div>
-                        <button id="btnModeQR" class="relative flex-1 py-3 text-xs font-black z-10 text-emerald-600">RENAME L/R (QR SCANNER)</button>
-                        <button id="btnModeOCR" class="relative flex-1 py-3 text-xs font-black z-10 text-slate-400">RENAME WOS (OCR SCANNER)</button>
+                <div class="glass-panel p-1.5 rounded-[1.2rem] relative">
+                    <div class="relative flex items-center bg-slate-100 dark:bg-slate-900 rounded-[1rem] p-1 border dark:border-slate-800 text-[10px] md:text-xs">
+                        <div id="switchThumb" class="absolute left-1 top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 transition-transform duration-300"></div>
+                        <button id="btnModeQR" class="relative flex-1 py-2 font-black z-10 text-emerald-600">RENAME L/R (QR SCANNER)</button>
+                        <button id="btnModeOCR" class="relative flex-1 py-2 font-black z-10 text-slate-400">RENAME WOS (OCR SCANNER)</button>
                     </div>
                 </div>
 
                 <!-- Dropzone -->
-                <div id="dropZone" class="glass-panel p-8 border-4 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem] text-center hover:border-hssi cursor-pointer relative transition-all group">
+                <div id="dropZone" class="glass-panel p-4 md:p-6 border-2 md:border-4 border-dashed border-slate-200 dark:border-slate-800 rounded-[1.5rem] md:rounded-[2rem] text-center hover:border-hssi cursor-pointer relative transition-all group shrink-0">
                     <input type="file" id="fileInput" multiple accept="application/pdf" class="absolute inset-0 opacity-0 cursor-pointer z-10">
-                    <i data-lucide="upload-cloud" class="w-12 h-12 text-hssi mx-auto mb-4 group-hover:scale-110 transition-transform"></i>
-                    <h3 class="font-black text-lg uppercase">Upload Dokumen PDF</h3>
-                    <p class="text-slate-400 text-sm">Klik atau seret file ke sini untuk mulai proses</p>
+                    <i data-lucide="upload-cloud" class="w-8 h-8 md:w-10 md:h-10 text-hssi mx-auto mb-2 group-hover:scale-110 transition-transform"></i>
+                    <h3 class="font-black text-sm md:text-base uppercase">Upload Dokumen PDF</h3>
+                    <p class="text-slate-400 text-[10px] md:text-xs">Klik atau seret file ke sini untuk mulai proses</p>
                 </div>
 
                 <!-- Table -->
-                <main class="flex-1 glass-panel rounded-[2rem] overflow-hidden flex flex-col min-h-0 shadow-lg">
-                    <div class="px-8 py-4 border-b dark:border-slate-800 flex justify-between items-center bg-white/50 dark:bg-slate-900/50">
-                        <h2 class="font-black text-xs uppercase tracking-widest text-slate-500">Antrean File (<span id="fileCount">0</span>)</h2>
-                        <button id="btnDownloadZip" class="hidden bg-slate-900 dark:bg-hssi text-white px-6 py-2 rounded-xl text-xs font-black uppercase flex items-center gap-2 transition-all active:scale-95">
-                            <i data-lucide="archive" class="w-4 h-4"></i> Download ZIP
+                <main class="flex-1 glass-panel rounded-[1.5rem] md:rounded-[2rem] overflow-hidden flex flex-col min-h-0 shadow-lg">
+                    <div class="px-5 md:px-8 py-3 border-b dark:border-slate-800 flex justify-between items-center bg-white/50 dark:bg-slate-900/50">
+                        <h2 class="font-black text-[10px] uppercase tracking-widest text-slate-500">Antrean File (<span id="fileCount">0</span>)</h2>
+                        <button id="btnDownloadZip" class="hidden bg-slate-900 dark:bg-hssi text-white px-4 py-1.5 rounded-xl text-[10px] font-black uppercase flex items-center gap-2 transition-all active:scale-95">
+                            <i data-lucide="archive" class="w-3.5 h-3.5"></i> Download ZIP
                         </button>
                     </div>
-                    <div class="flex-1 overflow-auto p-2">
+                    <div class="flex-1 overflow-y-auto p-2">
                         <table class="w-full border-separate border-spacing-y-2">
                             <tbody id="tableBody">
                                 <tr id="emptyState">
-                                    <td class="py-20 text-center opacity-30 italic font-black uppercase text-xs">Menunggu dokumen diunggah...</td>
+                                    <td class="py-12 md:py-20 text-center opacity-30 italic font-black uppercase text-[10px]">Menunggu dokumen diunggah...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -129,18 +135,18 @@
             </div>
 
             <!-- Monitor -->
-            <aside class="lg:col-span-4 flex flex-col space-y-6 overflow-hidden">
-                <div class="glass-panel p-6 rounded-[2rem] shadow-xl h-full flex flex-col overflow-hidden">
-                    <h3 class="font-black text-slate-400 text-[10px] uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <i data-lucide="monitor" class="w-4 h-4 text-hssi"></i> Live Preview Monitor
+            <aside class="lg:col-span-4 flex flex-col space-y-4 md:space-y-6 overflow-hidden">
+                <div class="glass-panel p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] shadow-xl h-full flex flex-col overflow-hidden">
+                    <h3 class="font-black text-slate-400 text-[9px] md:text-[10px] uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <i data-lucide="monitor" class="w-3.5 h-3.5 text-hssi"></i> Live Preview Monitor
                     </h3>
-                    <div id="noPreviewContainer" class="flex-1 bg-slate-100 dark:bg-slate-950 rounded-[1.5rem] flex items-center justify-center p-2 relative shadow-inner overflow-hidden">
+                    <div id="noPreviewContainer" class="flex-1 bg-slate-100 dark:bg-slate-950 rounded-[1.2rem] md:rounded-[1.5rem] flex items-center justify-center p-2 relative shadow-inner overflow-y-auto">
                         <canvas id="previewCanvas" class="hidden"></canvas>
                         <div id="noPreview" class="text-slate-300 italic text-[10px] uppercase font-black">No Active Preview</div>
                     </div>
-                    <div class="mt-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800">
-                        <h4 class="text-[9px] font-black text-hssi uppercase mb-1">Detection Info</h4>
-                        <div id="infoMode" class="text-[10px] text-slate-500 leading-tight">
+                    <div class="mt-3 p-3 md:p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800">
+                        <h4 class="text-[8px] md:text-[9px] font-black text-hssi uppercase mb-0.5">Detection Info</h4>
+                        <div id="infoMode" class="text-[9px] md:text-[10px] text-slate-500 leading-tight">
                             • Mode Aktif: QR Deep Scan<br>
                             • Mencari nomor ID dokumen (L/P)
                         </div>
@@ -148,6 +154,12 @@
                 </div>
             </aside>
         </div>
+
+        <!-- Footer -->
+        <footer class="flex flex-col md:flex-row justify-between items-center py-1 md:py-2 gap-1 md:gap-2 shrink-0">
+            <p class="text-[7px] md:text-[9px] text-slate-400 font-bold uppercase tracking-[0.2em]">© 2026 PPC Department - PT Hanwa Steel Service Indonesia</p>
+            <p class="text-[7px] md:text-[9px] text-slate-500 font-medium italic text-right">Created By: <span class="text-hssi font-black not-italic">EGA ABDILAH RAHMAN</span></p>
+        </footer>
     </div>
 
     <canvas id="hiddenCanvas" class="hidden"></canvas>
@@ -198,13 +210,13 @@
         // Mode Switching
         elements.btnModeQR.onclick = () => {
             if (scanMode !== 'QR') {
-                performFullReset(); // Otomatis refresh state
+                performFullReset();
                 setMode('QR');
             }
         };
         elements.btnModeOCR.onclick = () => {
             if (scanMode !== 'OCR') {
-                performFullReset(); // Otomatis refresh state
+                performFullReset();
                 setMode('OCR');
             }
         };
@@ -222,45 +234,30 @@
                 : '• Mode Aktif: OCR Pola Text<br>• Format: Order No - Packing No';
         }
 
-        // Fungsi Reset Inti (Internal)
         function performFullReset() {
-            // 1. Reset data array
             processedFiles = [];
             failedCounter = 0;
-            
-            // 2. Kosongkan Tabel sepenuhnya
             elements.tableBody.innerHTML = '';
-            
-            // 3. Masukkan kembali baris empty state
             const tr = document.createElement('tr');
             tr.id = 'emptyState';
-            tr.innerHTML = '<td class="py-20 text-center opacity-30 italic font-black uppercase text-xs">Menunggu dokumen diunggah...</td>';
+            tr.innerHTML = '<td class="py-12 md:py-20 text-center opacity-30 italic font-black uppercase text-[10px]">Menunggu dokumen diunggah...</td>';
             elements.tableBody.appendChild(tr);
-            
-            // 4. Reset UI
             elements.btnDownloadZip.classList.add('hidden');
             elements.btnReset.classList.add('hidden');
             elements.fileCount.innerText = '0';
-            
-            // 5. Reset Monitor Preview
             elements.previewCanvas.classList.add('hidden');
             elements.noPreviewLabel.classList.remove('hidden');
             pCtx.clearRect(0, 0, elements.previewCanvas.width, elements.previewCanvas.height);
-            
-            // 6. Reset Input File
             elements.fileInput.value = '';
-            
             lucide.createIcons();
         }
 
-        // Tombol Reset Manual
         elements.btnReset.onclick = () => {
             if (confirm('Apakah Anda yakin ingin menghapus semua daftar antrean?')) {
                 performFullReset();
             }
         };
 
-        // File Handlers
         elements.fileInput.onchange = (e) => handleFiles(e.target.files);
         elements.dropZone.ondragover = (e) => { e.preventDefault(); elements.dropZone.classList.add('border-hssi'); };
         elements.dropZone.ondragleave = () => elements.dropZone.classList.remove('border-hssi');
@@ -269,10 +266,8 @@
         async function handleFiles(files) {
             const pdfs = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
             if (!pdfs.length) return;
-            
             if (elements.emptyState) elements.emptyState.style.display = 'none';
             elements.btnReset.classList.remove('hidden');
-            
             for (const file of pdfs) await processDeepScan(file);
         }
 
@@ -301,7 +296,6 @@
             temp.select();
             document.execCommand("copy");
             document.body.removeChild(temp);
-            
             const btn = document.getElementById(btnId);
             const original = btn.innerHTML;
             btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i>';
@@ -315,10 +309,10 @@
             tr.id = `row-${rowId}`;
             tr.className = "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all";
             tr.innerHTML = `
-                <td class="px-6 py-4 text-[10px] font-bold text-slate-500 w-1/4 truncate">${file.name}</td>
-                <td class="px-6 py-4 text-center" id="st-${rowId}"><div class="loader mx-auto"></div></td>
-                <td class="px-6 py-4 font-black text-xs text-slate-400 italic" id="res-${rowId}">Memproses...</td>
-                <td class="px-6 py-4 text-right" id="ac-${rowId}">-</td>
+                <td class="px-4 md:px-6 py-3 text-[9px] md:text-[10px] font-bold text-slate-500 w-1/4 truncate">${file.name}</td>
+                <td class="px-4 md:px-6 py-3 text-center" id="st-${rowId}"><div class="loader mx-auto"></div></td>
+                <td class="px-4 md:px-6 py-3 font-black text-[10px] md:text-xs text-slate-400 italic" id="res-${rowId}">Memproses...</td>
+                <td class="px-4 md:px-6 py-3 text-right" id="ac-${rowId}">-</td>
             `;
             elements.tableBody.prepend(tr);
 
@@ -346,7 +340,6 @@
                     const xWidth = Math.floor(elements.hiddenCanvas.width * 0.8);
                     const yHeight = Math.floor(elements.hiddenCanvas.height * 0.45);
                     const headerData = ctx.getImageData(xStart, 0, xWidth, yHeight);
-                    
                     const cleanThresholds = [175, 140, 200, 120, 220, 100, 240, 155];
                     for (let t of cleanThresholds) {
                         const cleaned = cleanImageData(headerData, t);
@@ -361,7 +354,6 @@
                     const text = ocrRes.data.text;
                     const orderMatch = text.match(/\b\d{2}-\d{5}-\d{2}-\d{2}\b/);
                     const packingMatch = text.match(/\b\d{9}-\d{6}\b/);
-                    
                     const orderNo = orderMatch ? orderMatch[0] : null;
                     const packingNo = packingMatch ? packingMatch[0] : null;
                     if (orderNo && packingNo) detected = `${orderNo} - ${packingNo}`;
@@ -375,26 +367,26 @@
                 let finalFileName = "";
                 if (detected) {
                     finalFileName = detected.replace(/[^a-zA-Z0-9\-_ ]/g, '_') + ".pdf";
-                    statusEl.innerHTML = '<span class="status-pill bg-emerald-100 text-emerald-700 uppercase">BERHASIL</span>';
+                    statusEl.innerHTML = '<span class="status-pill bg-emerald-100 text-emerald-700 uppercase text-[8px]">BERHASIL</span>';
                     resEl.innerHTML = `
                         <div class="flex items-center gap-2">
                             <span class="text-slate-800 dark:text-slate-100">${finalFileName}</span>
                             <button id="copy-${rowId}" onclick="copyToClipboard('${detected}', 'copy-${rowId}')" class="text-slate-400 hover:text-hssi transition-colors">
-                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <i data-lucide="copy" class="w-3 h-3"></i>
                             </button>
                         </div>
                     `;
                 } else {
                     failedCounter++;
                     finalFileName = `GAGAL_${failedCounter}_${file.name}`;
-                    statusEl.innerHTML = '<span class="status-pill bg-rose-100 text-rose-700 uppercase">GAGAL</span>';
+                    statusEl.innerHTML = '<span class="status-pill bg-rose-100 text-rose-700 uppercase text-[8px]">GAGAL</span>';
                     resEl.innerHTML = `<span class="text-rose-500 font-bold italic">${finalFileName}</span>`;
                 }
 
                 const blobUrl = URL.createObjectURL(file);
                 actionEl.innerHTML = `
-                    <a href="${blobUrl}" download="${finalFileName}" class="bg-slate-900 dark:bg-hssi text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase flex items-center gap-1 inline-flex hover:scale-105 transition-transform active:scale-95 shadow-sm">
-                        <i data-lucide="save" class="w-3 h-3"></i> Simpan
+                    <a href="${blobUrl}" download="${finalFileName}" class="bg-slate-900 dark:bg-hssi text-white px-3 py-1.5 rounded-lg text-[8px] font-black uppercase flex items-center gap-1 inline-flex hover:scale-105 transition-transform active:scale-95 shadow-sm">
+                        <i data-lucide="save" class="w-2.5 h-2.5"></i> Simpan
                     </a>
                 `;
                 
@@ -406,7 +398,7 @@
             } catch (err) {
                 console.error(err);
                 if (document.getElementById(`st-${rowId}`)) {
-                    document.getElementById(`st-${rowId}`).innerHTML = '<span class="status-pill bg-slate-200 text-slate-500">ERROR</span>';
+                    document.getElementById(`st-${rowId}`).innerHTML = '<span class="status-pill bg-slate-200 text-slate-500 text-[8px]">ERROR</span>';
                 }
             }
         }
@@ -420,22 +412,18 @@
             try {
                 const zip = new JSZip();
                 const usedNames = new Set();
-                
                 processedFiles.forEach((f) => {
                     let fileName = f.newName;
                     const extension = ".pdf";
                     const nameWithoutExt = fileName.slice(0, -4);
-                    
                     let counter = 1;
                     while (usedNames.has(fileName)) {
                         fileName = `${nameWithoutExt}_copy${counter}${extension}`;
                         counter++;
                     }
-                    
                     usedNames.add(fileName);
                     zip.file(fileName, f.originalFile);
                 });
-                
                 const blob = await zip.generateAsync({ type: "blob" });
                 const a = document.createElement("a");
                 a.href = URL.createObjectURL(blob);
@@ -452,14 +440,5 @@
         };
 
     </script>
-
-     <!-- Footer -->
-        <footer class="flex flex-col md:flex-row justify-between items-center py-2 gap-2">
-            <p class="text-[8px] md:text-[9px] text-slate-400 font-bold uppercase tracking-[0.3em]">© 2026 PPC Department - PT Hanwa Steel Service Indonesia</p>
-            <p class="text-[8px] md:text-[9px] text-slate-500 font-medium italic text-right">Created By: <span class="text-hssi font-black not-italic">EGA ABDILAH RAHMAN</span></p>
-        </footer>
-    </div>
-
-    <canvas id="hiddenCanvas" class="hidden"></canvas>
 </body>
 </html>
