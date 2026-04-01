@@ -40,20 +40,11 @@
         .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
         .dark .glass-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(30, 41, 59, 0.8); }
         
-        /* Custom scrollbar */
+        /* Custom scrollbar for better aesthetics */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #334155; }
-
-        /* Custom Table Row Active State */
-        .row-active {
-            border-color: #16a34a !important;
-            background-color: rgba(22, 163, 74, 0.05) !important;
-        }
-        .dark .row-active {
-            background-color: rgba(22, 163, 74, 0.1) !important;
-        }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-500 h-screen flex flex-col overflow-hidden">
@@ -66,7 +57,7 @@
             </div>
             <h2 class="text-2xl font-black text-center uppercase tracking-tight mb-2">Update Fitur Baru!</h2>
             <p class="text-slate-500 dark:text-slate-400 text-center text-sm leading-relaxed mb-8">
-                Sekarang kamu bisa melihat ulang dokumen yang sudah diproses dengan mengklik baris file di <span class="font-bold text-hssi">Daftar Antrean</span>. Preview monitor akan menyesuaikan tampilannya secara instan! 🚀
+                Hi, my happiness users 😁 Sekarang telah tersedia tombol <span class="font-bold text-hssi">Rename WOS</span> untuk automasi rename file <span class="font-bold underline">WOS dan NG Report</span>. Silakan gunakan switch mode di atas untuk berpindah fitur sesuai kebutuhan dokumen Anda, dan kamu bisa berbagi informasi ini kepada seseorang yang membutuhkan ku. Thank you for your attention, have a good day dear. 😍
             </p>
             <button id="closeModal" class="w-full bg-hssi hover:bg-hssi-dark text-white font-black py-4 rounded-2xl shadow-lg shadow-hssi/20 transition-all active:scale-95 uppercase text-xs tracking-widest">
                 Saya Mengerti
@@ -156,8 +147,8 @@
                     <div class="mt-3 p-3 md:p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800">
                         <h4 class="text-[8px] md:text-[9px] font-black text-hssi uppercase mb-0.5">Detection Info</h4>
                         <div id="infoMode" class="text-[9px] md:text-[10px] text-slate-500 leading-tight">
-                            • Mode Aktif: QR Deep Scan (Auto 360°)<br>
-                            • Klik pada antrean file untuk melihat ulang preview.
+                            • Mode Aktif: QR Deep Scan<br>
+                            • Mencari nomor ID dokumen (L/P)
                         </div>
                     </div>
                 </div>
@@ -239,8 +230,8 @@
             elements.btnModeOCR.classList.toggle('text-slate-400', m !== 'OCR');
             
             elements.infoMode.innerHTML = m === 'QR' 
-                ? '• Mode Aktif: QR Deep Scan (Auto 360°)<br>• Klik pada antrean file untuk melihat ulang preview.'
-                : '• Mode Aktif: OCR Pola Text (Auto 360°)<br>• Klik pada antrean file untuk melihat ulang preview.';
+                ? '• Mode Aktif: QR Deep Scan<br>• Mencari nomor ID dokumen (L/P)'
+                : '• Mode Aktif: OCR Pola Text<br>• Format: Order No - Packing No';
         }
 
         function performFullReset() {
@@ -312,85 +303,24 @@
             setTimeout(() => { btn.innerHTML = original; lucide.createIcons(); }, 2000);
         };
 
-        // Fungsi Helper untuk merotasi canvas
-        function getRotatedCanvas(sourceCanvas, angleDegrees) {
-            if (angleDegrees === 0) return sourceCanvas;
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d', { willReadFrequently: true });
-            
-            if (angleDegrees === 90 || angleDegrees === 270) {
-                canvas.width = sourceCanvas.height;
-                canvas.height = sourceCanvas.width;
-            } else {
-                canvas.width = sourceCanvas.width;
-                canvas.height = sourceCanvas.height;
-            }
-            
-            context.translate(canvas.width / 2, canvas.height / 2);
-            context.rotate(angleDegrees * Math.PI / 180);
-            context.drawImage(sourceCanvas, -sourceCanvas.width / 2, -sourceCanvas.height / 2);
-            
-            return canvas;
-        }
-
-        // Fungsi untuk menampilkan ulang preview saat baris diklik
-        function showPreview(rowId) {
-            const fileData = processedFiles.find(f => f.id === rowId);
-            if (!fileData || !fileData.previewDataUrl) return;
-
-            // Highlight baris yang dipilih
-            document.querySelectorAll('#tableBody tr').forEach(tr => {
-                tr.classList.remove('row-active');
-            });
-            const activeRow = document.getElementById(`row-${rowId}`);
-            if (activeRow) {
-                activeRow.classList.add('row-active');
-            }
-
-            // Tampilkan gambar dari dataURL ke dalam Preview Monitor
-            const img = new Image();
-            img.onload = () => {
-                elements.previewCanvas.width = img.width;
-                elements.previewCanvas.height = img.height;
-                elements.previewCanvas.classList.remove('hidden');
-                elements.noPreviewLabel.classList.add('hidden');
-                pCtx.drawImage(img, 0, 0);
-            };
-            img.src = fileData.previewDataUrl;
-        }
-
         async function processDeepScan(file) {
             const rowId = 'r-' + Math.random().toString(36).substr(2, 5);
             const tr = document.createElement('tr');
             tr.id = `row-${rowId}`;
-            // Tambahkan class interaktif cursor-pointer dan hover effect
-            tr.className = "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-hssi/50 transition-all cursor-pointer";
-            
-            // Tambahkan event click untuk memanggil preview
-            tr.onclick = (e) => {
-                // Cegah klik terpanggil bila yang ditekan adalah tombol Copy atau Simpan
-                if (e.target.closest('a') || e.target.closest('button')) return;
-                showPreview(rowId);
-            };
-
+            tr.className = "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all";
             tr.innerHTML = `
-                <td class="px-4 md:px-6 py-3 text-[9px] md:text-[10px] font-bold text-slate-500 w-1/4 truncate select-none">${file.name}</td>
+                <td class="px-4 md:px-6 py-3 text-[9px] md:text-[10px] font-bold text-slate-500 w-1/4 truncate">${file.name}</td>
                 <td class="px-4 md:px-6 py-3 text-center" id="st-${rowId}"><div class="loader mx-auto"></div></td>
-                <td class="px-4 md:px-6 py-3 font-black text-[10px] md:text-xs text-slate-400 italic select-none" id="res-${rowId}">Memproses...</td>
+                <td class="px-4 md:px-6 py-3 font-black text-[10px] md:text-xs text-slate-400 italic" id="res-${rowId}">Memproses...</td>
                 <td class="px-4 md:px-6 py-3 text-right" id="ac-${rowId}">-</td>
             `;
             elements.tableBody.prepend(tr);
-
-            // Hilangkan status aktif (highlight) dari baris lain karena kita sedang memproses file baru yang tampil di preview
-            document.querySelectorAll('#tableBody tr').forEach(r => r.classList.remove('row-active'));
-            tr.classList.add('row-active');
 
             try {
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
                 const page = await pdf.getPage(1);
                 
-                // Set initial un-rotated preview
                 const pVp = page.getViewport({ scale: 0.8 });
                 elements.previewCanvas.width = pVp.width;
                 elements.previewCanvas.height = pVp.height;
@@ -398,69 +328,37 @@
                 elements.noPreviewLabel.classList.add('hidden');
                 await page.render({ canvasContext: pCtx, viewport: pVp }).promise;
 
-                // Render main image once for processing
                 const vp = page.getViewport({ scale: 4.5 });
                 elements.hiddenCanvas.width = vp.width;
                 elements.hiddenCanvas.height = vp.height;
                 await page.render({ canvasContext: ctx, viewport: vp }).promise;
 
                 let detected = null;
-                let successfulAngle = 0;
-                
-                // Rotasi yang akan dites: 0° (Normal), 180° (Terbalik), 90° (Miring Kanan), 270° (Miring Kiri)
-                const angles = [0, 180, 90, 270];
 
-                for (let angle of angles) {
-                    // Buat canvas sementara berdasarkan rotasi loop
-                    const currentCanvas = getRotatedCanvas(elements.hiddenCanvas, angle);
-                    const currentCtx = currentCanvas.getContext('2d', { willReadFrequently: true });
-
-                    if (scanMode === 'QR') {
-                        // Region atas dokumen yg telah dirotasi
-                        const xStart = Math.floor(currentCanvas.width * 0.1);
-                        const xWidth = Math.floor(currentCanvas.width * 0.8);
-                        const yHeight = Math.floor(currentCanvas.height * 0.45);
-                        const headerData = currentCtx.getImageData(xStart, 0, xWidth, yHeight);
-                        const cleanThresholds = [175, 140, 200, 120, 220, 100, 240, 155];
-                        
-                        for (let t of cleanThresholds) {
-                            const cleaned = cleanImageData(headerData, t);
-                            const result = jsQR(cleaned, headerData.width, headerData.height, { inversionAttempts: "dontInvert" });
-                            if (result && isRequestNumber(result.data)) {
-                                detected = result.data.trim().toUpperCase();
-                                break;
-                            }
+                if (scanMode === 'QR') {
+                    const xStart = Math.floor(elements.hiddenCanvas.width * 0.1);
+                    const xWidth = Math.floor(elements.hiddenCanvas.width * 0.8);
+                    const yHeight = Math.floor(elements.hiddenCanvas.height * 0.45);
+                    const headerData = ctx.getImageData(xStart, 0, xWidth, yHeight);
+                    const cleanThresholds = [175, 140, 200, 120, 220, 100, 240, 155];
+                    for (let t of cleanThresholds) {
+                        const cleaned = cleanImageData(headerData, t);
+                        const result = jsQR(cleaned, headerData.width, headerData.height, { inversionAttempts: "dontInvert" });
+                        if (result && isRequestNumber(result.data)) {
+                            detected = result.data.trim().toUpperCase();
+                            break;
                         }
-                    } else {
-                        const ocrRes = await Tesseract.recognize(currentCanvas, 'eng');
-                        const text = ocrRes.data.text;
-                        const orderMatch = text.match(/\b\d{2}-\d{5}-\d{2}-\d{2}\b/);
-                        const packingMatch = text.match(/\b\d{9}-\d{6}\b/);
-                        const orderNo = orderMatch ? orderMatch[0] : null;
-                        const packingNo = packingMatch ? packingMatch[0] : null;
-                        
-                        if (orderNo && packingNo) detected = `${orderNo} - ${packingNo}`;
-                        else if (orderNo || packingNo) detected = orderNo || packingNo;
                     }
-
-                    // Jika file berhasil dibaca pada rotasi ini, hentikan proses rotasi loop selanjutnya
-                    if (detected) {
-                        successfulAngle = angle;
-                        break;
-                    }
+                } else {
+                    const ocrRes = await Tesseract.recognize(elements.hiddenCanvas, 'eng');
+                    const text = ocrRes.data.text;
+                    const orderMatch = text.match(/\b\d{2}-\d{5}-\d{2}-\d{2}\b/);
+                    const packingMatch = text.match(/\b\d{9}-\d{6}\b/);
+                    const orderNo = orderMatch ? orderMatch[0] : null;
+                    const packingNo = packingMatch ? packingMatch[0] : null;
+                    if (orderNo && packingNo) detected = `${orderNo} - ${packingNo}`;
+                    else if (orderNo || packingNo) detected = orderNo || packingNo;
                 }
-
-                // Setelah berhasil mendapatkan posisi aslinya, betulkan juga display di preview monitor
-                let finalPreviewDataUrl = "";
-                if (detected && successfulAngle !== 0) {
-                    const rotatedPreview = getRotatedCanvas(elements.previewCanvas, successfulAngle);
-                    elements.previewCanvas.width = rotatedPreview.width;
-                    elements.previewCanvas.height = rotatedPreview.height;
-                    pCtx.drawImage(rotatedPreview, 0, 0);
-                }
-                
-                // Ambil gambar final (sudah/belum dirotasi) dan jadikan dataURL untuk disimpan
-                finalPreviewDataUrl = elements.previewCanvas.toDataURL('image/jpeg', 0.8);
 
                 const statusEl = document.getElementById(`st-${rowId}`);
                 const resEl = document.getElementById(`res-${rowId}`);
@@ -473,7 +371,7 @@
                     resEl.innerHTML = `
                         <div class="flex items-center gap-2">
                             <span class="text-slate-800 dark:text-slate-100">${finalFileName}</span>
-                            <button id="copy-${rowId}" onclick="copyToClipboard('${detected}', 'copy-${rowId}')" class="text-slate-400 hover:text-hssi transition-colors relative z-10">
+                            <button id="copy-${rowId}" onclick="copyToClipboard('${detected}', 'copy-${rowId}')" class="text-slate-400 hover:text-hssi transition-colors">
                                 <i data-lucide="copy" class="w-3 h-3"></i>
                             </button>
                         </div>
@@ -487,19 +385,12 @@
 
                 const blobUrl = URL.createObjectURL(file);
                 actionEl.innerHTML = `
-                    <a href="${blobUrl}" download="${finalFileName}" class="bg-slate-900 dark:bg-hssi text-white px-3 py-1.5 rounded-lg text-[8px] font-black uppercase flex items-center gap-1 inline-flex hover:scale-105 transition-transform active:scale-95 shadow-sm relative z-10">
+                    <a href="${blobUrl}" download="${finalFileName}" class="bg-slate-900 dark:bg-hssi text-white px-3 py-1.5 rounded-lg text-[8px] font-black uppercase flex items-center gap-1 inline-flex hover:scale-105 transition-transform active:scale-95 shadow-sm">
                         <i data-lucide="save" class="w-2.5 h-2.5"></i> Simpan
                     </a>
                 `;
                 
-                // Simpan ID baris dan Data URL dari gambar Preview
-                processedFiles.push({ 
-                    id: rowId,
-                    originalFile: file, 
-                    newName: finalFileName,
-                    previewDataUrl: finalPreviewDataUrl 
-                });
-
+                processedFiles.push({ originalFile: file, newName: finalFileName });
                 elements.fileCount.innerText = processedFiles.length;
                 elements.btnDownloadZip.classList.remove('hidden');
                 lucide.createIcons();
